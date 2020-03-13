@@ -48,43 +48,33 @@ uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
        dispositions du clavier 
     */
     keyboard.key[0].value[0] = 'Q';
-    keyboard.key[0].value[1] = 'q';
     keyboard.key[0].value[2] = '1';
     
     keyboard.key[1].value[0] = 'W';
-    keyboard.key[1].value[1] = 'w';
     keyboard.key[1].value[2] = '2';
     
     keyboard.key[2].value[0] = 'E';
-    keyboard.key[2].value[1] = 'e';
     keyboard.key[2].value[2] = '3';
     
     keyboard.key[3].value[0] = 'R';
-    keyboard.key[3].value[1] = 'r';
     keyboard.key[3].value[2] = '4';
     
     keyboard.key[4].value[0] = 'T';
-    keyboard.key[4].value[1] = 't';
     keyboard.key[4].value[2] = '5';
     
     keyboard.key[5].value[0] = 'Y';
-    keyboard.key[5].value[1] = 'y';
     keyboard.key[5].value[2] = '6';
     
     keyboard.key[6].value[0] = 'U';
-    keyboard.key[6].value[1] = 'u';
     keyboard.key[6].value[2] = '7';
     
     keyboard.key[7].value[0] = 'I';
-    keyboard.key[7].value[1] = 'i';
     keyboard.key[7].value[2] = '8';
     
     keyboard.key[8].value[0] = 'O';
-    keyboard.key[8].value[1] = 'o';
     keyboard.key[8].value[2] = '9';
     
     keyboard.key[9].value[0] = 'P';
-    keyboard.key[9].value[1] = 'p';
     keyboard.key[9].value[2] = '0';
     
     /* Initialisation des coordonnées des touches du clavier pour la rangée du milieu */    
@@ -104,39 +94,30 @@ uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
     */
     
     keyboard.key[10].value[0] = 'A';
-    keyboard.key[10].value[1] = 'a';
     keyboard.key[10].value[2] = '1';
     
     keyboard.key[11].value[0] = 'S';
-    keyboard.key[11].value[1] = 's';
     keyboard.key[11].value[2] = '2';
     
     keyboard.key[12].value[0] = 'D';
-    keyboard.key[12].value[1] = 'd';
     keyboard.key[12].value[2] = '3';
     
     keyboard.key[13].value[0] = 'F';
-    keyboard.key[13].value[1] = 'f';
     keyboard.key[13].value[2] = '4';
     
     keyboard.key[14].value[0] = 'G';
-    keyboard.key[14].value[1] = 'g';
     keyboard.key[14].value[2] = '5';
     
     keyboard.key[15].value[0] = 'H';
-    keyboard.key[15].value[1] = 'h';
     keyboard.key[15].value[2] = '6';
     
     keyboard.key[16].value[0] = 'J';
-    keyboard.key[16].value[1] = 'j';
     keyboard.key[16].value[2] = '7';
     
     keyboard.key[17].value[0] = 'K';
-    keyboard.key[17].value[1] = 'k';
     keyboard.key[17].value[2] = '8';
     
     keyboard.key[18].value[0] = 'L';
-    keyboard.key[18].value[1] = 'l';
     keyboard.key[18].value[2] = '9';
     
     /* Initialisation des coordonnées des touches du clavier pour la dernière rangée */    
@@ -154,31 +135,24 @@ uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
        dispositions du clavier 
     */
     keyboard.key[19].value[0] = 'Z';
-    keyboard.key[19].value[1] = 'z';
     keyboard.key[19].value[2] = '1';
     
     keyboard.key[20].value[0] = 'X';
-    keyboard.key[20].value[1] = 'x';
     keyboard.key[20].value[2] = '2';
     
     keyboard.key[21].value[0] = 'C';
-    keyboard.key[21].value[1] = 'c';
     keyboard.key[21].value[2] = '3';
     
     keyboard.key[22].value[0] = 'V';
-    keyboard.key[22].value[1] = 'v';
     keyboard.key[22].value[2] = '4';
     
     keyboard.key[23].value[0] = 'B';
-    keyboard.key[23].value[1] = 'b';
     keyboard.key[23].value[2] = '5';
     
     keyboard.key[24].value[0] = 'N';
-    keyboard.key[24].value[1] = 'n';
     keyboard.key[24].value[2] = '6';
     
     keyboard.key[25].value[0] = 'M';
-    keyboard.key[25].value[1] = 'm';
     keyboard.key[25].value[2] = '7';
     
     /*Bloc d’initialisation pour les touches spéciales*/
@@ -194,16 +168,7 @@ uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
     keyboard.key[26].value[1] = KEY_ENTER_VALUE;
     keyboard.key[26].value[2] = KEY_ENTER_VALUE;
     
-    /* Touche "Shift" */
-    keyboard.key[27].id = 27;
-    keyboard.key[27].posX = 3;
-    keyboard.key[27].posY = keyboard.posY + 3 + (KEY_SMALL_HEIGHT + KEY_DISTANCE) * 3;
-    keyboard.key[27].dimX = KEY_SHIFT_LENGTH;
-    keyboard.key[27].dimY = KEY_SMALL_HEIGHT;
-    keyboard.key[27].status = KEY_RELEASED;
-    keyboard.key[27].value[0] = KEY_SHIFT_VALUE;
-    keyboard.key[27].value[1] = KEY_SHIFT_VALUE;
-    keyboard.key[27].value[2] = KEY_SHIFT_VALUE;
+
     
     /* Touche "Space" */
     keyboard.key[28].id = 28;
