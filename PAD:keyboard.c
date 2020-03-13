@@ -7,7 +7,7 @@
  *******************************************************************************
  */  
 
-/-Ajouter le fichier header/
+/*Ajouter le fichier header*/
 #include "keyboard.h"
 
 /* Les structures de la clavature et de l’écran tactile */
