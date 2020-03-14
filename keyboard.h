@@ -31,17 +31,17 @@ extern "C" {
 #define MODE_SYMBOLS                    2
 
 /* Общее количество клавиш */
-#define KEY_NUMBER                      30
-#define KEY_BUFFER_LEN                  30
+#define KEY_NUMBER                      8
+#define KEY_BUFFER_LEN                  8
 
 /* Размеры клавиш в пикселях */
-#define KEY_SMALL_LENGTH                40
-#define KEY_SMALL_HEIGHT                40
+#define KEY_SMALL_LENGTH                70
+#define KEY_SMALL_HEIGHT                70
 #define KEY_ENTER_LENGTH                88
 #define KEY_SHIFT_LENGTH                64
 #define KEY_BACKSPACE_LENGTH            64
 #define KEY_SPACE_LENGTH                136
-#define KEY_DISTANCE                    8
+#define KEY_DISTANCE                    25
 
 /* ASCII-коды для специальных клавиш */
 #define KEY_ENTER_VALUE                 0x0D
@@ -83,7 +83,7 @@ uint8_t Key_display_normal(uint8_t id);
 uint8_t Key_display_inverted(uint8_t id);
 uint8_t Key_display_specials(uint8_t id);
 uint8_t Keyboard_check(void);
-uint8_t Keyboard_handler(char *prompt,char buffer[]);
+uint8_t Keyboard_handler(char *prompt, char buffer[]);
 
 #ifdef __cplusplus
 }
