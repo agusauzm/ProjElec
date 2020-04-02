@@ -307,20 +307,25 @@ uint8_t Keyboard_check(void)
                     ((tScreen.touchY[0] >= keyboard.key[i].posY - 4) && (tScreen.touchY[0] < keyboard.key[i].posY + keyboard.key[i].dimY + 4)) &&
                     (keyboard.key[i].status == KEY_RELEASED)) {
                 /* Dessinez la bonne clé dans la couleur inversée */
-                Key_display_inverted(i);
                 /* Si l'appui a déjà été fixée sur une autre clé, "appuyez-la" et redessiner */
                 for (j = 0; j < KEY_NUMBER; j++) {
-                    if (keyboard.key[j].status == KEY_PRESSED) {
-                        Key_display_normal(j);
+                    if (keyboard.key[j].status == KEY_PRESSED and j!=i) {
                         keyboard.key[j].status = KEY_RELEASED;
                     }
                 }
                 /* Changer l’état de la touche pour laquelle l'appui a été enregistré */
                 keyboard.key[i].status = KEY_PRESSED;
-                Key_display_inverted(i);
                 /* Réinitialisez l’état du conducteur de l’écran tactile */
                 BSP_TS_ResetTouchData(&tScreen);
             }
+        }
+    }
+    for (i = 0; i < KEY_NUMBER; i++) {
+        if (keyboard.key[i].status == KEY_PRESSED) {
+            Key_display_inverted(i);
+        }
+        else {
+            Key_display_normal(i);
         }
     }
 /* S’il n’y a pas de contact, vérifiez l’état de chaque touche, peut-être qu'un appui
@@ -328,7 +333,6 @@ uint8_t Keyboard_check(void)
     for (i = 0; i < KEY_NUMBER; i++) {
         /* Si la clé touche est pressée, "appuyez-la" et redessiner */
         if (keyboard.key[i].status == KEY_PRESSED) {
-            Key_display_normal(i);
             keyboard.key[i].status = KEY_RELEASED;
             BSP_TS_ResetTouchData(&tScreen);
             /* On retourne la valeur de l'entrée */
