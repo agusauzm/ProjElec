@@ -14,6 +14,10 @@
 Keyboard_TypeDef keyboard;
 TS_StateTypeDef tScreen;
 USBMIDI midi(Highspeed_Interface,0x0700,0x0101,0x0001);
+
+/* Liste couleurs possibles */
+uint32_t keycolorlist[40] = {LCD_COLOR_BLUE,LCD_COLOR_GREEN,LCD_COLOR_RED,LCD_COLOR_CYAN,LCD_COLOR_MAGENTA,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTBLUE,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTRED,LCD_COLOR_LIGHTCYAN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKGREEN,LCD_COLOR_DARKRED,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKMAGENTA,LCD_COLOR_DARKYELLOW,LCD_COLOR_BROWN,LCD_COLOR_ORANGE,LCD_COLOR_BLUE,LCD_COLOR_GREEN,LCD_COLOR_RED,LCD_COLOR_CYAN,LCD_COLOR_MAGENTA,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTBLUE,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTRED,LCD_COLOR_LIGHTCYAN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKGREEN,LCD_COLOR_DARKRED,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKMAGENTA,LCD_COLOR_DARKYELLOW,LCD_COLOR_BROWN,LCD_COLOR_ORANGE};
+
 /*Fonction pour travailler avec le clavier à l’écran */
 /* Initialisation et affichage du clavier */
 uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
@@ -259,7 +263,7 @@ uint8_t Key_display_normal(uint8_t id)
 {
     /* Nous obtenons la couleur de l’arrière-plan de l’écran et la couleur de la police */
     uint32_t back_color = BSP_LCD_GetBackColor();
-    uint32_t text_color = BSP_LCD_GetTextColor();
+    uint32_t text_color = keycolorlist[id];
     /* Changer les couleurs et peindre l’endroit pour la touche sur l’écran avec la couleur de l’arrière-plan */
     BSP_LCD_SetTextColor(back_color);
     BSP_LCD_SetBackColor(text_color);
@@ -279,7 +283,7 @@ uint8_t Key_display_normal(uint8_t id)
 uint8_t Key_display_inverted(uint8_t id)
 {
     uint32_t back_color = BSP_LCD_GetBackColor();
-    uint32_t text_color = BSP_LCD_GetTextColor();
+    uint32_t text_color = keycolorlist[id];
     /* Remplir la place pour la touche à l’écran avec la couleur de la police */
     BSP_LCD_FillRect(keyboard.key[id].posX, keyboard.key[id].posY, keyboard.key[id].dimX, keyboard.key[id].dimY);
     /* Changer de couleur et afficher la valeur de la touche dans la disposition actuelle du clavier */
