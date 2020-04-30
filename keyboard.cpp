@@ -10,6 +10,7 @@
 #include "keyboard.h"
 #include "USBMIDI.h"
 #include "MIDIMessage.h"
+
 /* Les structures de la clavature et de l’écran tactile */
 Keyboard_TypeDef keyboard;
 TS_StateTypeDef tScreen;
@@ -29,8 +30,9 @@ uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
     keyboard.posY = y_value;
     /* La valeur par défaut sur le clavier est une disposition anglaise en MAJ. */
     keyboard.mode = MODE_UPPER_CASE;
+    
     /* Bloc d’initialisation pour les clés standard */
-    /* Initialisation des coordonnées des touches du clavier pour la première rangée */
+    /* Initialisation des coordonnées des touches du clavier  */
     for (i = 0; i < 7; i++) {
         keyboard.key[i].id = i;
         keyboard.key[i].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * i;
@@ -79,9 +81,9 @@ uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
         keyboard.key[i].dimY = KEY_SMALLER_HEIGHT;
         keyboard.key[i].status = KEY_RELEASED;
     }
-    /* Valeurs ASCII de chaque touche de la première rangée pour différentes
-       dispositions du clavier
-    */
+    
+    /* Valeur attribué à chaque touche du clavier qui vont par la suite
+    être lié à la note correspondante*/
     keyboard.key[0].value[0] = 'C';
     keyboard.key[0].value[1] = '3';
     keyboard.key[0].value[2] = 1;
@@ -303,15 +305,15 @@ uint8_t Keyboard_check(void)
     uint8_t j;
     /* Vérification de l’état du "conducteur" de l’écran tactile */
     BSP_TS_GetState(&tScreen);
-    /* Si on appuie sur l'ecran */
+    /* Si on appuie sur l'écran */
     if (tScreen.touchDetected) {
         for (i = 0; i < KEY_NUMBER; i++) {
             /* Si les coordonnées tactiles se trouvent dans les limites de l’une des touches non pressés, +/- 4 pixels */
             if (((tScreen.touchX[0] >= keyboard.key[i].posX - 4) && (tScreen.touchX[0] < keyboard.key[i].posX + keyboard.key[i].dimX + 4)) &&
                     ((tScreen.touchY[0] >= keyboard.key[i].posY - 4) && (tScreen.touchY[0] < keyboard.key[i].posY + keyboard.key[i].dimY + 4)) &&
                     (keyboard.key[i].status == KEY_RELEASED)) {
-                /* Dessinez la bonne clé dans la couleur inversée */
-                /* Si l'appui a déjà été fixée sur une autre clé, "appuyez-la" et redessiner */
+                /* Dessinez la bonne touche dans la couleur inversée */
+                /* Si l'appui a déjà été fixée sur une autre touche, "appuyez-la" et redessiner */
                 for (j = 0; j < KEY_NUMBER; j++) {
                     if (keyboard.key[j].status == KEY_PRESSED and j!=i) {
                         keyboard.key[j].status = KEY_RELEASED;
@@ -335,7 +337,7 @@ uint8_t Keyboard_check(void)
 /* S’il n’y a pas de contact, vérifiez l’état de chaque touche, peut-être qu'un appui
    est déja en cours et devrait être traité comme une entrée */
     for (i = 0; i < KEY_NUMBER; i++) {
-        /* Si la clé touche est pressée, "appuyez-la" et redessiner */
+        /* Si la touche est pressée, "appuyez-la" et redessiner */
         if (keyboard.key[i].status == KEY_PRESSED) {
             keyboard.key[i].status = KEY_RELEASED;
             BSP_TS_ResetTouchData(&tScreen);
@@ -349,7 +351,8 @@ uint8_t Keyboard_check(void)
 uint8_t Keyboard_handler(char *prompt, char buffer[])
 {
     uint8_t key;
-    /* Vérifiez s’il y a un nouveau clic */
+    /* Vérifiez s’il y a un nouveau clic et attribution du code MIDI nécessaire
+    pour obtenir la note voulue sur chaque touche*/
     key = Keyboard_check();
     if(key == 1)
     {
