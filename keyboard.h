@@ -34,14 +34,14 @@ extern "C" {
 #define KEY_BUFFER_LEN                  39
 
 /* Taille d'une touche en pixels */
-#define KEY_SMALL_LENGTH                55
-#define KEY_SMALL_HEIGHT                50
-#define KEY_DISTANCE                    10
-#define KEY_SMALLER_HEIGHT              30
+#define KEY_SMALL_LENGTH                55    /* longueur */
+#define KEY_SMALL_HEIGHT                50    /* largeur */
+#define KEY_DISTANCE                    10    /* distance entre les touches */
+#define KEY_SMALLER_HEIGHT              30    /* largeur plus petite pour les dièses */
 
 /* État d'une touche */
-#define KEY_RELEASED                    0
-#define KEY_PRESSED                     1
+#define KEY_RELEASED                    0     /* la touche n'est pas appuyée */
+#define KEY_PRESSED                     1     /* la touche est appuyée */
 
 /* Structure d'une touche */
 typedef struct
