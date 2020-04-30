@@ -1,6 +1,6 @@
 /*
  *******************************************************************************
- * Un exemple du clavier à l’écran sur le panneau de démonstration STM32F746NG Discovery
+ * Un exemple du clavier de pianoà l’écran sur STM32F746NG Discovery
  Utilisation d’un ensemble standard de bibliothèques BSP et d’une
  Bibliothèques "keyboard.h"
  *******************************************************************************
@@ -8,7 +8,7 @@
 
 /* Ajouter une bibliothèque pour travailler avec LCD */
 #include "stm32746g_discovery_lcd.h"
-/* Ajout d’une bibliothèque de claviers à l’écra */
+/* Ajout d’une bibliothèque de claviers à l’écran */
 #include "keyboard.h"
 
 #include "mbed.h"
@@ -36,8 +36,6 @@ void start_KB_LCD()
     BSP_LCD_Clear(LCD_COLOR_WHITE);
     BSP_LCD_SelectLayer(1);
     BSP_LCD_Clear(LCD_COLOR_BLACK);
-    BSP_LCD_SetTransparency(0, 0);
-    BSP_LCD_SetTransparency(1, 100);
     /* Définir la couleur de fond et la couleur du texte de l’écran, ainsi que la police  */
     BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
     BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
