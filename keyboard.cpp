@@ -6,18 +6,18 @@
  * Fichier "keyboard.ccp"
  *******************************************************************************
  */
-/*Ajouter le fichier header*/
+/*Ajouter les fichiers header*/
 #include "keyboard.h"
 #include "USBMIDI.h"
 #include "MIDIMessage.h"
-
 /* Les structures de la clavature et de l’écran tactile */
 Keyboard_TypeDef keyboard;
 TS_StateTypeDef tScreen;
-USBMIDI midi(Highspeed_Interface,0x0700,0x0101,0x0001);
+USBMIDI midi(Fastspeed_Interface,0x0700,0x0101,0x0001);
 
 /* Liste couleurs possibles */
-uint32_t keycolorlist[40] = {LCD_COLOR_DARKBLUE,LCD_COLOR_MAGENTA,LCD_COLOR_DARKRED,LCD_COLOR_BLUE,LCD_COLOR_ORANGE,LCD_COLOR_DARKRED,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTCYAN,LCD_COLOR_BLUE,LCD_COLOR_DARKMAGENTA,LCD_COLOR_ORANGE,LCD_COLOR_GREEN,LCD_COLOR_BROWN,LCD_COLOR_RED,LCD_COLOR_ORANGE,LCD_COLOR_CYAN,LCD_COLOR_RED,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTBLUE,LCD_COLOR_DARKCYAN,LCD_COLOR_MAGENTA,LCD_COLOR_DARKGREEN,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_GREEN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_RED,LCD_COLOR_LIGHTBLUE,LCD_COLOR_LIGHTRED,LCD_COLOR_LIGHTRED,LCD_COLOR_DARKYELLOW,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKYELLOW,LCD_COLOR_CYAN,LCD_COLOR_DARKGREEN,LCD_COLOR_BROWN,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKMAGENTA};
+/*uint32_t keycolorlist[40] = {LCD_COLOR_BLUE,LCD_COLOR_GREEN,LCD_COLOR_RED,LCD_COLOR_CYAN,LCD_COLOR_MAGENTA,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTBLUE,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTRED,LCD_COLOR_LIGHTCYAN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKGREEN,LCD_COLOR_DARKRED,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKMAGENTA,LCD_COLOR_DARKYELLOW,LCD_COLOR_BROWN,LCD_COLOR_ORANGE,LCD_COLOR_BLUE,LCD_COLOR_GREEN,LCD_COLOR_RED,LCD_COLOR_CYAN,LCD_COLOR_MAGENTA,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTBLUE,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTRED,LCD_COLOR_LIGHTCYAN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKGREEN,LCD_COLOR_DARKRED,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKMAGENTA,LCD_COLOR_DARKYELLOW,LCD_COLOR_BROWN,LCD_COLOR_ORANGE};*/
+uint32_t keycolorlist[15] = {LCD_COLOR_BLUE,LCD_COLOR_GREEN,LCD_COLOR_YELLOW,LCD_COLOR_ORANGE,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_DARKCYAN,LCD_COLOR_MAGENTA,LCD_COLOR_LIGHTRED,LCD_COLOR_RED,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKGREEN,LCD_COLOR_DARKYELLOW,LCD_COLOR_DARKRED,LCD_COLOR_DARKMAGENTA};
 
 /*Fonction pour travailler avec le clavier à l’écran */
 /* Initialisation et affichage du clavier */
@@ -29,218 +29,181 @@ uint8_t Keyboard_init(uint16_t  x_value, uint16_t   y_value)
     keyboard.posX = x_value;
     keyboard.posY = y_value;
     /* La valeur par défaut sur le clavier est une disposition anglaise en MAJ. */
-    keyboard.mode = MODE_UPPER_CASE;
+    keyboard.mode = GAMME_3;
+    /* Bloc d’initialisation des touches */
+    /* Initialisation des coordonnées des touches du clavier pour la première rangée */
+    for (i = 0; i < 5; i++) {
+        keyboard.key[i].id = i;                    //valeur unique d'identifiaction de chaque touche 
+        keyboard.key[i].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * i; // coordonnée x de la touche
+        keyboard.key[i].posY = keyboard.posY - 40; // coordonnée y de la touche
+        keyboard.key[i].dimX = KEY_SMALL_LENGTH; // largeur de la touche
+        keyboard.key[i].dimY = KEY_SMALL_HEIGHT; // hauteur de la touche
+        keyboard.key[i].status = KEY_RELEASED; // On initialise le status de la touche en indiquant qu'elle est bien relachée
+    }
+    /* Valeurs de chaque touche de la première rangée pour les différents modes */
+    /* On stocke dans value le caractère à afficher selon le mode sélectionné et
+       dans content la valeur unique associée */
+       
+    keyboard.key[0].value[NOTE] = 'C'; // Ce caractère sera toujours affiché car l'appelation de la note ne change pas quelque soit la gamme (C3,C4,C5,etc)
+    keyboard.key[0].value[GAMME_3] = '3'; // Caractère à afficher au côté du C quand la gamme 3 (mode 1) est selectionnée
+    keyboard.key[0].content[GAMME_3] = '1'; // valeur associée au C3 
+    keyboard.key[0].value[GAMME_4] = '4'; // Caractère à afficher au côté du C quand la gamme 4 (mode 2) est selectionnée
+    keyboard.key[0].content[GAMME_4] = '9'; // valeur associée au C4
+    keyboard.key[0].value[GAMME_5] = '5'; // Caractère à afficher au côté du C quand la gamme 5 (mode 3) est selectionnée
+    keyboard.key[0].content[GAMME_5] = 'h'; // valeur associée au C5
+                                     //Il en va de même pour les touches suivantes
+    keyboard.key[1].value[NOTE] = 'D';
+    keyboard.key[1].value[GAMME_3] = '3';
+    keyboard.key[1].content[GAMME_3] = '2';
+    keyboard.key[1].value[GAMME_4] = '4';
+    keyboard.key[1].content[GAMME_4] = 'a';
+    keyboard.key[1].value[GAMME_5] = '5';
+    keyboard.key[1].content[GAMME_5] = 'i';
     
-    /* Bloc d’initialisation pour les clés standard */
-    /* Initialisation des coordonnées des touches du clavier  */
-    for (i = 0; i < 7; i++) {
+    keyboard.key[2].value[NOTE] = 'E';
+    keyboard.key[2].value[GAMME_3] = '3';
+    keyboard.key[2].content[GAMME_3] = '3';
+    keyboard.key[2].value[GAMME_4] = '4';
+    keyboard.key[2].content[GAMME_4] = 'b';
+    keyboard.key[2].value[GAMME_5] = '5';
+    keyboard.key[2].content[GAMME_5] = 'j';
+    
+    keyboard.key[3].value[NOTE] = 'F';
+    keyboard.key[3].value[GAMME_3] = '3';
+    keyboard.key[3].content[GAMME_3] = '4';
+    keyboard.key[3].value[GAMME_4] = '4';
+    keyboard.key[3].content[GAMME_4] = 'c';
+    keyboard.key[3].value[GAMME_5] = '5';
+    keyboard.key[3].content[GAMME_5] = 'k';
+    
+    keyboard.key[4].value[NOTE] = 'G';
+    keyboard.key[4].value[GAMME_3] = '3';
+    keyboard.key[4].content[GAMME_3] = '5';
+    keyboard.key[4].value[GAMME_4] = '4';
+    keyboard.key[4].content[GAMME_4] = 'd';
+    keyboard.key[4].value[GAMME_5] = '5';
+    keyboard.key[4].content[GAMME_5] = 'l';
+    /* Initialisation des coordonnées des touches du clavier pour la dernière (3e) rangée */
+    for (i = 6; i < 9; i++) {
         keyboard.key[i].id = i;
-        keyboard.key[i].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * i;
-        keyboard.key[i].posY = keyboard.posY + 42;
+        keyboard.key[i].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (i-5);
+        keyboard.key[i].posY = keyboard.posY + 3 + KEY_SMALL_HEIGHT + KEY_DISTANCE + 10;
         keyboard.key[i].dimX = KEY_SMALL_LENGTH;
         keyboard.key[i].dimY = KEY_SMALL_HEIGHT;
         keyboard.key[i].status = KEY_RELEASED;
     }
-    for (i = 7; i < 14; i++) {
+    
+    keyboard.key[5].id = i;
+    keyboard.key[5].posX = keyboard.posX + 5;
+    keyboard.key[5].posY = keyboard.posY + 3 + KEY_SMALL_HEIGHT + KEY_DISTANCE +50;
+    keyboard.key[5].dimX = KEY_SMALL_LENGTH;
+    keyboard.key[5].dimY = KEY_SMALL_HEIGHT;
+    keyboard.key[5].status = KEY_RELEASED;    
+    
+    keyboard.key[9].id = i;
+    keyboard.key[9].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (9-5);
+    keyboard.key[9].posY = keyboard.posY + 3 + KEY_SMALL_HEIGHT + KEY_DISTANCE +50;
+    keyboard.key[9].dimX = KEY_SMALL_LENGTH;
+    keyboard.key[9].dimY = KEY_SMALL_HEIGHT;
+    keyboard.key[9].status = KEY_RELEASED;   
+    
+    /* Valeurs de chaque touche de la dernière (3e) rangée pour les différents modes */
+    /* On stocke dans value le caractère à afficher selon le mode sélectionné et
+       dans content la valeur unique associée */
+       
+    keyboard.key[5].value[NOTE] = '<';
+    keyboard.key[5].value[GAMME_3] = '-';
+    keyboard.key[5].content[GAMME_3] = '-';
+    keyboard.key[5].value[GAMME_4] = '-';
+    keyboard.key[5].content[GAMME_4] = '-';
+    keyboard.key[5].value[GAMME_5] = '-';
+    keyboard.key[5].content[GAMME_5] = '-';
+    
+    keyboard.key[6].value[NOTE] = 'A';
+    keyboard.key[6].value[GAMME_3] = '3';
+    keyboard.key[6].content[GAMME_3] = '6';
+    keyboard.key[6].value[GAMME_4] = '4';
+    keyboard.key[6].content[GAMME_4] = 'e';
+    keyboard.key[6].value[GAMME_5] = '5';
+    keyboard.key[6].content[GAMME_5] = 'm';
+    
+    keyboard.key[7].value[NOTE] = 'B';
+    keyboard.key[7].value[GAMME_3] = '3';
+    keyboard.key[7].content[GAMME_3] = '7';
+    keyboard.key[7].value[GAMME_4] = '4';
+    keyboard.key[7].content[GAMME_4] = 'f';
+    keyboard.key[7].value[GAMME_5] = '5';
+    keyboard.key[7].content[GAMME_5] = 'n';
+    
+    keyboard.key[8].value[NOTE] = 'C';
+    keyboard.key[8].value[GAMME_3] = '4';
+    keyboard.key[8].content[GAMME_3] = '8';
+    keyboard.key[8].value[GAMME_4] = '5';
+    keyboard.key[8].content[GAMME_4] = 'g';
+    keyboard.key[8].value[GAMME_5] = '6';
+    keyboard.key[8].content[GAMME_5] = 'o';
+    
+    keyboard.key[9].value[NOTE] = '+';
+    keyboard.key[9].value[GAMME_3] = '>';
+    keyboard.key[9].content[GAMME_3] = '+';
+    keyboard.key[9].value[GAMME_4] = '>';
+    keyboard.key[9].content[GAMME_4] = '+';
+    keyboard.key[9].value[GAMME_5] = '>';
+    keyboard.key[9].content[GAMME_5] = '+';
+    
+    /* Initialisation des coordonnées des touches # (rangée du milieu)*/
+    for (i = 10; i < 15; i++) {
         keyboard.key[i].id = i;
-        keyboard.key[i].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (i-7);
-        keyboard.key[i].posY = keyboard.posY + 132;
-        keyboard.key[i].dimX = KEY_SMALL_LENGTH;
-        keyboard.key[i].dimY = KEY_SMALL_HEIGHT;
+        keyboard.key[i].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (i-10) + 10;
+        keyboard.key[i].posY = keyboard.posY + 3 + KEY_SMALL_HEIGHT + KEY_DISTANCE - 55;
+        keyboard.key[i].dimX = KEY_SMALL_LENGTH - 15;
+        keyboard.key[i].dimY = KEY_SMALL_HEIGHT - 15;
         keyboard.key[i].status = KEY_RELEASED;
     }
-    for (i = 14; i < 21; i++) {
-        keyboard.key[i].id = i;
-        keyboard.key[i].posX = keyboard.posX + 5 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (i-14);
-        keyboard.key[i].posY = keyboard.posY + 222;
-        keyboard.key[i].dimX = KEY_SMALL_LENGTH;
-        keyboard.key[i].dimY = KEY_SMALL_HEIGHT;
-        keyboard.key[i].status = KEY_RELEASED;
-    }
-    for (i = 21; i < 27; i++) {
-        keyboard.key[i].id = i;
-        keyboard.key[i].posX = keyboard.posX + 30 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (i-21);
-        keyboard.key[i].posY = keyboard.posY + 5;
-        keyboard.key[i].dimX = KEY_SMALL_LENGTH;
-        keyboard.key[i].dimY = KEY_SMALLER_HEIGHT;
-        keyboard.key[i].status = KEY_RELEASED;
-    }
-    for (i = 27; i < 33; i++) {
-        keyboard.key[i].id = i;
-        keyboard.key[i].posX = keyboard.posX + 30 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (i-27);
-        keyboard.key[i].posY = keyboard.posY + 97;
-        keyboard.key[i].dimX = KEY_SMALL_LENGTH;
-        keyboard.key[i].dimY = KEY_SMALLER_HEIGHT;
-        keyboard.key[i].status = KEY_RELEASED;
-    }
-    for (i = 33; i < 39; i++) {
-        keyboard.key[i].id = i;
-        keyboard.key[i].posX = keyboard.posX + 30 + (KEY_DISTANCE + KEY_SMALL_LENGTH) * (i-33);
-        keyboard.key[i].posY = keyboard.posY + 187;
-        keyboard.key[i].dimX = KEY_SMALL_LENGTH;
-        keyboard.key[i].dimY = KEY_SMALLER_HEIGHT;
-        keyboard.key[i].status = KEY_RELEASED;
-    }
     
-    /* Valeur attribué à chaque touche du clavier qui vont par la suite
-    être lié à la note correspondante*/
-    keyboard.key[0].value[0] = 'C';
-    keyboard.key[0].value[1] = '3';
-    keyboard.key[0].value[2] = 1;
-
-    keyboard.key[1].value[0] = 'D';
-    keyboard.key[1].value[1] = '3';
-    keyboard.key[1].value[2] = 2;
-
-    keyboard.key[2].value[0] = 'E';
-    keyboard.key[2].value[1] = '3';
-    keyboard.key[2].value[2] = 3;
-
-    keyboard.key[3].value[0] = 'F';
-    keyboard.key[3].value[1] = '3';
-    keyboard.key[3].value[2] = 4;
-
-    keyboard.key[4].value[0] = 'G';
-    keyboard.key[4].value[1] = '3';
-    keyboard.key[4].value[2] = 5;
-
-    keyboard.key[5].value[0] = 'A';
-    keyboard.key[5].value[1] = '3';
-    keyboard.key[5].value[2] = 6;
-
-    keyboard.key[6].value[0] = 'B';
-    keyboard.key[6].value[1] = '3';
-    keyboard.key[6].value[2] = 7;
+    /* Valeurs de chaque touche de la rangée du mileu pour les différents modes */
+    /* On stocke dans value le caractère à afficher selon le mode sélectionné et
+       dans content la valeur unique associée */
+       
+    keyboard.key[10].value[NOTE] = 'C';
+    keyboard.key[10].value[GAMME_3] = '#';
+    keyboard.key[10].content[GAMME_3] = 'A';
+    keyboard.key[10].value[GAMME_4] = '#';
+    keyboard.key[10].content[GAMME_4] = 'F';
+    keyboard.key[10].value[GAMME_5] = '#';
+    keyboard.key[10].content[GAMME_5] = 'K';
     
-    keyboard.key[7].value[0] = 'C';
-    keyboard.key[7].value[1] = '4';
-    keyboard.key[7].value[2] = 8;
-
-    keyboard.key[8].value[0] = 'D';
-    keyboard.key[8].value[1] = '4';
-    keyboard.key[8].value[2] = 9;
-
-    keyboard.key[9].value[0] = 'E';
-    keyboard.key[9].value[1] = '4';
-    keyboard.key[9].value[2] = 10;
-
-    keyboard.key[10].value[0] = 'F';
-    keyboard.key[10].value[1] = '4';
-    keyboard.key[10].value[2] = 11;
-
-    keyboard.key[11].value[0] = 'G';
-    keyboard.key[11].value[1] = '4';
-    keyboard.key[11].value[2] = 12;
-
-    keyboard.key[12].value[0] = 'A';
-    keyboard.key[12].value[1] = '4';
-    keyboard.key[12].value[2] = 13;
-
-    keyboard.key[13].value[0] = 'B';
-    keyboard.key[13].value[1] = '4';
-    keyboard.key[13].value[2] = 14;
+    keyboard.key[11].value[NOTE] = 'D';
+    keyboard.key[11].value[GAMME_3] = '#';
+    keyboard.key[11].content[GAMME_3] = 'B';
+    keyboard.key[11].value[GAMME_4] = '#';
+    keyboard.key[11].content[GAMME_4] = 'G';
+    keyboard.key[11].value[GAMME_5] = '#';
+    keyboard.key[11].content[GAMME_5] = 'L';
     
-    keyboard.key[14].value[0] = 'C';
-    keyboard.key[14].value[1] = '5';
-    keyboard.key[14].value[2] = 15;
-
-    keyboard.key[15].value[0] = 'D';
-    keyboard.key[15].value[1] = '5';
-    keyboard.key[15].value[2] = 16;
-
-    keyboard.key[16].value[0] = 'E';
-    keyboard.key[16].value[1] = '5';
-    keyboard.key[16].value[2] = 17;
-
-    keyboard.key[17].value[0] = 'F';
-    keyboard.key[17].value[1] = '5';
-    keyboard.key[17].value[2] = 18;
-
-    keyboard.key[18].value[0] = 'G';
-    keyboard.key[18].value[1] = '5';
-    keyboard.key[18].value[2] = 19;
-
-    keyboard.key[19].value[0] = 'A';
-    keyboard.key[19].value[1] = '5';
-    keyboard.key[19].value[2] = 20;
-
-    keyboard.key[20].value[0] = 'B';
-    keyboard.key[20].value[1] = '5';
-    keyboard.key[20].value[2] = 21;
+    keyboard.key[12].value[NOTE] = 'F';
+    keyboard.key[12].value[GAMME_3] = '#';
+    keyboard.key[12].content[GAMME_3] = 'C';
+    keyboard.key[12].value[GAMME_4] = '#';
+    keyboard.key[12].content[GAMME_4] = 'H';
+    keyboard.key[12].value[GAMME_5] = '#';
+    keyboard.key[12].content[GAMME_5] = 'M';
     
-    keyboard.key[21].value[0] = 'C';
-    keyboard.key[21].value[1] = '#';
-    keyboard.key[21].value[2] = 22;
+    keyboard.key[13].value[NOTE] = 'G';
+    keyboard.key[13].value[GAMME_3] = '#';
+    keyboard.key[13].content[GAMME_3] = 'D';
+    keyboard.key[13].value[GAMME_4] = '#';
+    keyboard.key[13].content[GAMME_4] = 'I';
+    keyboard.key[13].value[GAMME_5] = '#';
+    keyboard.key[13].content[GAMME_5] = 'N';
     
-    keyboard.key[22].value[0] = 'D';
-    keyboard.key[22].value[1] = '#';
-    keyboard.key[22].value[2] = 23;
-    
-    keyboard.key[23].value[0] = ' ';
-    keyboard.key[23].value[1] = ' ';
-    keyboard.key[23].value[2] = 24;
-    
-    keyboard.key[24].value[0] = 'F';
-    keyboard.key[24].value[1] = '#';
-    keyboard.key[24].value[2] = 25;
-    
-    keyboard.key[25].value[0] = 'G';
-    keyboard.key[25].value[1] = '#';
-    keyboard.key[25].value[2] = 26;
-    
-    keyboard.key[26].value[0] = 'A';
-    keyboard.key[26].value[1] = '#';
-    keyboard.key[26].value[2] = 27;
-    
-    keyboard.key[27].value[0] = 'C';
-    keyboard.key[27].value[1] = '#';
-    keyboard.key[27].value[2] = 28;
-    
-    keyboard.key[28].value[0] = 'D';
-    keyboard.key[28].value[1] = '#';
-    keyboard.key[28].value[2] = 29;
-    
-    keyboard.key[29].value[0] = ' ';
-    keyboard.key[29].value[1] = ' ';
-    keyboard.key[29].value[2] = 30;
-    
-    keyboard.key[30].value[0] = 'F';
-    keyboard.key[30].value[1] = '#';
-    keyboard.key[30].value[2] = 31;
-    
-    keyboard.key[31].value[0] = 'G';
-    keyboard.key[31].value[1] = '#';
-    keyboard.key[31].value[2] = 32;
-    
-    keyboard.key[32].value[0] = 'A';
-    keyboard.key[32].value[1] = '#';
-    keyboard.key[32].value[2] = 33;
-    
-    keyboard.key[33].value[0] = 'C';
-    keyboard.key[33].value[1] = '#';
-    keyboard.key[33].value[2] = 34;
-    
-    keyboard.key[34].value[0] = 'D';
-    keyboard.key[34].value[1] = '#';
-    keyboard.key[34].value[2] = 35;
-    
-    keyboard.key[35].value[0] = ' ';
-    keyboard.key[35].value[1] = ' ';
-    keyboard.key[35].value[2] = 36;
-    
-    keyboard.key[36].value[0] = 'F';
-    keyboard.key[36].value[1] = '#';
-    keyboard.key[36].value[2] = 37;
-    
-    keyboard.key[37].value[0] = 'G';
-    keyboard.key[37].value[1] = '#';
-    keyboard.key[37].value[2] = 38;
-    
-    keyboard.key[38].value[0] = 'A';
-    keyboard.key[38].value[1] = '#';
-    keyboard.key[38].value[2] = 39;
-    
-    
+    keyboard.key[14].value[NOTE] = 'A';
+    keyboard.key[14].value[GAMME_3] = '#';
+    keyboard.key[14].content[GAMME_3] = 'E';
+    keyboard.key[14].value[GAMME_4] = '#';
+    keyboard.key[14].content[GAMME_4] = 'J';
+    keyboard.key[14].value[GAMME_5] = '#';
+    keyboard.key[14].content[GAMME_5] = 'O';
 
     /* Nous dessinons le clavier à l’écran */
     Keyboard_display_all();
@@ -265,7 +228,7 @@ uint8_t Key_display_normal(uint8_t id)
 {
     /* Nous obtenons la couleur de l’arrière-plan de l’écran et la couleur de la police */
     uint32_t back_color = BSP_LCD_GetBackColor();
-    uint32_t text_color = keycolorlist[id];
+    uint32_t text_color = BSP_LCD_GetTextColor();
     /* Changer les couleurs et peindre l’endroit pour la touche sur l’écran avec la couleur de l’arrière-plan */
     BSP_LCD_SetTextColor(back_color);
     BSP_LCD_SetBackColor(text_color);
@@ -277,8 +240,9 @@ uint8_t Key_display_normal(uint8_t id)
     BSP_LCD_DrawRect(keyboard.key[id].posX, keyboard.key[id].posY, keyboard.key[id].dimX, keyboard.key[id].dimY);
     BSP_LCD_DrawPixel(keyboard.key[id].posX + keyboard.key[id].dimX, keyboard.key[id].posY + keyboard.key[id].dimY, text_color);
     /* Afficher la valeur de la touche dans la disposition actuelle du clavier. */
-    BSP_LCD_DisplayChar(keyboard.key[id].posX + 8, keyboard.key[id].posY + 8, keyboard.key[id].value[keyboard.mode]);
-    BSP_LCD_DisplayChar(keyboard.key[id].posX + 20, keyboard.key[id].posY + 8, keyboard.key[id].value[keyboard.mode+1]);
+    BSP_LCD_DisplayChar(keyboard.key[id].posX + 20, keyboard.key[id].posY + 8, keyboard.key[id].value[keyboard.mode]);
+    BSP_LCD_DisplayChar(keyboard.key[id].posX + 8, keyboard.key[id].posY + 8, keyboard.key[id].value[NOTE]);
+
     return 0;
 }
 /* Dessin d’une seule touche de clavier à l’écran (couleur inversée) */
@@ -291,8 +255,8 @@ uint8_t Key_display_inverted(uint8_t id)
     /* Changer de couleur et afficher la valeur de la touche dans la disposition actuelle du clavier */
     BSP_LCD_SetTextColor(back_color);
     BSP_LCD_SetBackColor(text_color);
-    BSP_LCD_DisplayChar(keyboard.key[id].posX + 8, keyboard.key[id].posY + 8, keyboard.key[id].value[keyboard.mode]);
-    BSP_LCD_DisplayChar(keyboard.key[id].posX + 20, keyboard.key[id].posY + 8, keyboard.key[id].value[keyboard.mode+1]);
+    BSP_LCD_DisplayChar(keyboard.key[id].posX + 20, keyboard.key[id].posY + 8, keyboard.key[id].value[keyboard.mode]);
+    BSP_LCD_DisplayChar(keyboard.key[id].posX + 8, keyboard.key[id].posY + 8, keyboard.key[id].value[NOTE]);
     /* Retour de la couleur de fond d’écran précédente et la couleur de police */
     BSP_LCD_SetTextColor(text_color);
     BSP_LCD_SetBackColor(back_color);
@@ -305,15 +269,14 @@ uint8_t Keyboard_check(void)
     uint8_t j;
     /* Vérification de l’état du "conducteur" de l’écran tactile */
     BSP_TS_GetState(&tScreen);
-    /* Si on appuie sur l'écran */
+    /* Si on appuie sur l'ecran */
     if (tScreen.touchDetected) {
         for (i = 0; i < KEY_NUMBER; i++) {
             /* Si les coordonnées tactiles se trouvent dans les limites de l’une des touches non pressés, +/- 4 pixels */
             if (((tScreen.touchX[0] >= keyboard.key[i].posX - 4) && (tScreen.touchX[0] < keyboard.key[i].posX + keyboard.key[i].dimX + 4)) &&
                     ((tScreen.touchY[0] >= keyboard.key[i].posY - 4) && (tScreen.touchY[0] < keyboard.key[i].posY + keyboard.key[i].dimY + 4)) &&
                     (keyboard.key[i].status == KEY_RELEASED)) {
-                /* Dessinez la bonne touche dans la couleur inversée */
-                /* Si l'appui a déjà été fixée sur une autre touche, "appuyez-la" et redessiner */
+                /* Si l'appui a déjà été fixée sur une autre clé, "appuyez-la" et redessiner */
                 for (j = 0; j < KEY_NUMBER; j++) {
                     if (keyboard.key[j].status == KEY_PRESSED and j!=i) {
                         keyboard.key[j].status = KEY_RELEASED;
@@ -326,182 +289,270 @@ uint8_t Keyboard_check(void)
             }
         }
     }
-    for (i = 0; i < KEY_NUMBER; i++) {
-        if (keyboard.key[i].status == KEY_PRESSED) {
+    for(i=0;i < KEY_NUMBER; i++)
+    {
+        // Permet de colorier la touche lorsqu'on reste appuyé sur l'une d'elle
+        if(keyboard.key[i].status == KEY_PRESSED)
+        {
             Key_display_inverted(i);
         }
-        else {
+        else
+        {
             Key_display_normal(i);
         }
+        
     }
 /* S’il n’y a pas de contact, vérifiez l’état de chaque touche, peut-être qu'un appui
    est déja en cours et devrait être traité comme une entrée */
     for (i = 0; i < KEY_NUMBER; i++) {
-        /* Si la touche est pressée, "appuyez-la" et redessiner */
+        /* Si la clé touche est pressée, "appuyez-la" et redessiner */
         if (keyboard.key[i].status == KEY_PRESSED) {
             keyboard.key[i].status = KEY_RELEASED;
             BSP_TS_ResetTouchData(&tScreen);
             /* On retourne la valeur de l'entrée */
-            return keyboard.key[i].value[2];
+            return keyboard.key[i].content[keyboard.mode];
         }
     }
     return 0;
 }
 /* Gestionnaire d’entrée de clavier à l’écran */
-uint8_t Keyboard_handler(char *prompt, char buffer[])
+void Keyboard_handler()
 {
     uint8_t key;
-    /* Vérifiez s’il y a un nouveau clic et attribution du code MIDI nécessaire
-    pour obtenir la note voulue sur chaque touche*/
+    int i;
+    /* Vérifiez s’il y a un nouveau clic */
     key = Keyboard_check();
-    if(key == 1)
+    
+        /* Si la touche "+>" est pressée, nous modifions la disposition du clavier */
+        /* On passe à la gamme suivante : gamme 4 quand on était en gamme 3, gamme 5 quand on était en gamme 4,et gamme 3 quand on était en gamme 5*/
+    if (key == '+')
+    {
+        
+        if(keyboard.mode == 1) //Passage en gamme 4
+        {
+            keyboard.mode = 2;   
+        }
+        else if(keyboard.mode == 2)//Passage en gamme 5
+        {
+            keyboard.mode = 3;    
+        }
+        else if(keyboard.mode == 3)// Passage en gamme 3
+        {
+            keyboard.mode = 1;    
+        }
+        
+        
+        for (i = 0; i < KEY_NUMBER; i++)
+        {
+            /* Nous affichons la valeur clé de la nouvelle mise en page */
+            BSP_LCD_DisplayChar(keyboard.key[i].posX + 8, keyboard.key[i].posY + 8, keyboard.key[i].value[keyboard.mode]);
+            BSP_LCD_DisplayChar(keyboard.key[i].posX + 8, keyboard.key[i].posY + 8, keyboard.key[i].value[NOTE]);
+
+        }
+        
+        wait(0.5); /*Permet d'éviter que le changement de gamme ne se fasse trop vite 
+        ( sans cela si on est en gamme 3 par exemple et qu'on appuie sur +>, on peut 
+        retourner en gamme 3 (en passant par la 4 et la 5 mais sans le voir) 
+        tellement le changement se fait rapidement )*/
+    }
+    
+    /* Si la touche "+>" est pressée, nous modifions la disposition du clavier */
+    /* On passe à la gamme précédente : gamme 4 quand on était en gamme 5, gamme 3 quand on était en gamme 4,et 
+    gamme 5 quand on était en gamme 3*/
+    
+    if (key == '-')
+    {
+        
+        if(keyboard.mode == 1) //Passage en gamme 5
+        {
+            keyboard.mode = 3;   
+        }
+        else if(keyboard.mode == 2) //Passage en gamme 3
+        {
+            keyboard.mode = 1;    
+        }
+        else if(keyboard.mode == 3) // Passage en gamme 4
+        {
+            keyboard.mode = 2;    
+        }
+        
+        
+        for (i = 0; i < KEY_NUMBER; i++)
+        {
+            /* Nous affichons la valeur clé de la nouvelle mise en page */
+            BSP_LCD_DisplayChar(keyboard.key[i].posX + 8, keyboard.key[i].posY + 8, keyboard.key[i].value[keyboard.mode]);
+            BSP_LCD_DisplayChar(keyboard.key[i].posX + 8, keyboard.key[i].posY + 8, keyboard.key[i].value[NOTE]);
+
+            /*Key_display_specials(i);*/
+        }
+        
+        wait(0.5); //Idem que précédemment
+    }
+    /* GESTION DES SIGNAUX MIDI */
+    
+    /* On envoie un signal différent en fonction de la touche sur laquelle on appuie
+        La note joué est donc différente */
+    
+    else if(key == '1')
     {
         midi.write(MIDIMessage::NoteOn(48));
     }
-    else if(key == 2)
-    {
-        midi.write(MIDIMessage::NoteOn(50));
-    }
-    else if(key == 3)
-    {
-        midi.write(MIDIMessage::NoteOn(52));
-    }
-    else if(key == 4)
-    {
-        midi.write(MIDIMessage::NoteOn(53));
-    }
-    else if(key == 5)
-    {
-        midi.write(MIDIMessage::NoteOn(55));
-    }
-    else if(key == 6)
-    {
-        midi.write(MIDIMessage::NoteOn(57));
-    }
-    else if(key == 7)
-    {
-        midi.write(MIDIMessage::NoteOn(59));
-    }
-    else if(key == 8)
-    {
-        midi.write(MIDIMessage::NoteOn(60));
-    }
-    else if(key == 9)
-    {
-        midi.write(MIDIMessage::NoteOn(62));
-    }
-    else if(key == 10)
-    {
-        midi.write(MIDIMessage::NoteOn(64));
-    }
-    else if(key == 11)
-    {
-        midi.write(MIDIMessage::NoteOn(65));
-    }
-    else if(key == 12)
-    {
-        midi.write(MIDIMessage::NoteOn(67));
-    }
-    else if(key == 13)
-    {
-        midi.write(MIDIMessage::NoteOn(69));
-    }
-    else if(key == 14)
-    {
-        midi.write(MIDIMessage::NoteOn(71));
-    }
-    else if(key == 15)
-    {
-        midi.write(MIDIMessage::NoteOn(72));
-    }
-    else if(key == 16)
-    {
-        midi.write(MIDIMessage::NoteOn(74));
-    }
-    else if(key == 17)
-    {
-        midi.write(MIDIMessage::NoteOn(76));
-    }
-    else if(key == 18)
-    {
-        midi.write(MIDIMessage::NoteOn(77));
-    }
-    else if(key == 19)
-    {
-        midi.write(MIDIMessage::NoteOn(79));
-    }
-    else if(key == 20)
-    {
-        midi.write(MIDIMessage::NoteOn(81));
-    }
-    else if(key == 21)
-    {
-        midi.write(MIDIMessage::NoteOn(83));
-    }
-    else if(key == 22)
+        else if(key == 'A')
     {
         midi.write(MIDIMessage::NoteOn(49));
     }
-    else if(key == 23)
+    else if(key == '2')
+    {
+        midi.write(MIDIMessage::NoteOn(50));
+    }
+        else if(key == 'B')
     {
         midi.write(MIDIMessage::NoteOn(51));
     }
-    else if(key == 25)
+    else if(key == '3')
+    {
+        midi.write(MIDIMessage::NoteOn(52));
+    }
+    else if(key == '4')
+    {
+        midi.write(MIDIMessage::NoteOn(53));
+    }
+    else if(key == 'C')
     {
         midi.write(MIDIMessage::NoteOn(54));
     }
-    else if(key == 26)
+    else if(key == '5')
+    {
+        midi.write(MIDIMessage::NoteOn(55));
+    }
+    else if(key == 'D')
     {
         midi.write(MIDIMessage::NoteOn(56));
     }
-    else if(key == 27)
+    else if(key == '6')
+    {
+        midi.write(MIDIMessage::NoteOn(57));
+    }
+    else if(key == 'E')
     {
         midi.write(MIDIMessage::NoteOn(58));
     }
-    else if(key == 28)
+    else if(key == '7')
+    {
+        midi.write(MIDIMessage::NoteOn(59));
+    }
+    else if(key == '8')
+    {
+        midi.write(MIDIMessage::NoteOn(60));
+    }
+    else if(key == '9')
+    {
+        midi.write(MIDIMessage::NoteOn(60));
+    }
+    else if(key == 'F')
     {
         midi.write(MIDIMessage::NoteOn(61));
     }
-    else if(key == 29)
+    else if(key == 'a')
+    {
+        midi.write(MIDIMessage::NoteOn(62));
+    }
+    else if(key == 'G')
     {
         midi.write(MIDIMessage::NoteOn(63));
     }
-    else if(key == 31)
+    else if(key == 'b')
+    {
+        midi.write(MIDIMessage::NoteOn(64));
+    }
+    else if(key == 'c')
+    {
+        midi.write(MIDIMessage::NoteOn(65));
+    }
+    else if(key == 'H')
     {
         midi.write(MIDIMessage::NoteOn(66));
     }
-    else if(key == 32)
+    else if(key == 'd')
+    {
+        midi.write(MIDIMessage::NoteOn(67));
+    }
+    else if(key == 'I')
     {
         midi.write(MIDIMessage::NoteOn(68));
     }
-    else if(key == 33)
+    else if(key == 'e')
+    {
+        midi.write(MIDIMessage::NoteOn(69));
+    }
+    else if(key == 'J')
     {
         midi.write(MIDIMessage::NoteOn(70));
     }
-    else if(key == 34)
+    else if(key == 'f')
+    {
+        midi.write(MIDIMessage::NoteOn(71));
+    }
+    else if(key == 'g')
+    {
+        midi.write(MIDIMessage::NoteOn(72));
+    }
+    else if(key == 'h')
+    {
+        midi.write(MIDIMessage::NoteOn(72));
+    }
+    else if(key == 'K')
     {
         midi.write(MIDIMessage::NoteOn(73));
     }
-    else if(key == 35)
+    else if(key == 'i')
+    {
+        midi.write(MIDIMessage::NoteOn(74));
+    }
+    else if(key == 'L')
     {
         midi.write(MIDIMessage::NoteOn(75));
     }
-    else if(key == 37)
+    else if(key == 'j')
+    {
+        midi.write(MIDIMessage::NoteOn(76));
+    }
+    else if(key == 'k')
+    {
+        midi.write(MIDIMessage::NoteOn(77));
+    }
+    else if(key == 'M')
     {
         midi.write(MIDIMessage::NoteOn(78));
     }
-    else if(key == 38)
+    else if(key == 'l')
+    {
+        midi.write(MIDIMessage::NoteOn(79));
+    }
+    else if(key == 'N')
     {
         midi.write(MIDIMessage::NoteOn(80));
     }
-    else if(key == 39)
+    else if(key == 'm')
+    {
+        midi.write(MIDIMessage::NoteOn(81));
+    }
+    else if(key == 'O')
     {
         midi.write(MIDIMessage::NoteOn(82));
     }
+    else if(key == 'n')
+    {
+        midi.write(MIDIMessage::NoteOn(83));
+    }
+    else if(key == 'o')
+    {
+        midi.write(MIDIMessage::NoteOn(84));
+    }
+    
     else
     {
         midi.write(MIDIMessage::AllNotesOff());
+
     }
-    /* Retourner la valeur de la dernière touche pressée */
-    return key;
 }
