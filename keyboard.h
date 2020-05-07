@@ -23,57 +23,56 @@ extern "C" {
 #include "stm32746g_discovery_ts.h"
 
 /* Définitions */
-/* Modes du clavier */
-#define MODE_NUMBER                     3
-#define MODE_UPPER_CASE                 0
-#define MODE_LOWER_CASE                 1
-#define MODE_SYMBOLS                    2
+/* Modes du clavier / Gammes */
+#define MODE_NUMBER              4
+#define NOTE                     0
+#define GAMME_3                  1
+#define GAMME_4                  2
+#define GAMME_5                  3
 
 /* Nombre de touches */
-#define KEY_NUMBER                      39
-#define KEY_BUFFER_LEN                  39
+#define KEY_NUMBER                      15
 
 /* Taille d'une touche en pixels */
-#define KEY_SMALL_LENGTH                55    /* longueur */
-#define KEY_SMALL_HEIGHT                50    /* largeur */
-#define KEY_DISTANCE                    10    /* distance entre les touches */
-#define KEY_SMALLER_HEIGHT              30    /* largeur plus petite pour les dièses */
+#define KEY_SMALL_LENGTH                70 //Longueur
+#define KEY_SMALL_HEIGHT                70 //Hauteur
+#define KEY_DISTANCE                    25 //Distance entre les touches
 
 /* État d'une touche */
-#define KEY_RELEASED                    0     /* la touche n'est pas appuyée */
-#define KEY_PRESSED                     1     /* la touche est appuyée */
+#define KEY_RELEASED                    0 //Touche relachée
+#define KEY_PRESSED                     1 //Touche appuyée
 
 /* Structure d'une touche */
 typedef struct
 {
-    uint8_t         id;
-    uint8_t         status;
-    uint16_t        posX;
-    uint16_t        posY;
-    uint8_t         dimX;
-    uint8_t         dimY;
-    int         value[MODE_NUMBER];
-    uint32_t        color;
+    uint8_t         id;     //valeur unique d'identifiaction de chaque touche 
+    uint8_t         status; //le status de la touche qui indique si elle est relachée ou enfoncée
+    uint16_t        posX;   //coordonnée x de la touche
+    uint16_t        posY;   //coordonnée y de la touche
+    uint8_t         dimX;   // largeur de la touche
+    uint8_t         dimY;   // hauteur de la touche
+    uint8_t         value[MODE_NUMBER]; //contient le caractère associée à l'appelation de la note (C,D,E,etc)
+    uint8_t         content[MODE_NUMBER]; //contient le caractère à afficher à côté de la lettre précédente 
+                                        //pour distinguer la gamme dans laquelle on se situe (3,4,5,etc)
 }   Key_TypeDef;
+
 
 /* Structure du clavier */
 typedef struct
 {
-    uint16_t        posX;
-    uint16_t        posY;
-    Key_TypeDef key[KEY_NUMBER];
-    uint8_t         mode;    
-    char            buffer[KEY_BUFFER_LEN];
+    uint16_t        posX;   //coordonnée x de l'origine du bloc des touches
+    uint16_t        posY;   //coordonnée y de l'origine du bloc des touches
+    Key_TypeDef key[KEY_NUMBER]; //structure précédente
+    uint8_t         mode;   //contient la gamme actuelle/ sélectionnée
 }   Keyboard_TypeDef;
 
 /* Fonctions du clavier sur l'écran */
-uint8_t Keyboard_init(uint16_t x_value, uint16_t y_value);
-uint8_t Keyboard_display_all(void);
-uint8_t Key_display_normal(uint8_t id);
-uint8_t Key_display_inverted(uint8_t id);
-uint8_t Key_display_specials(uint8_t id);
-uint8_t Keyboard_check(void);
-uint8_t Keyboard_handler(char *prompt, char buffer[]);
+uint8_t Keyboard_init(uint16_t x_value, uint16_t y_value); /* Initialisation et affichage du clavier */
+uint8_t Keyboard_display_all(void);         /* Dessiner le clavier à l’écran */
+uint8_t Key_display_normal(uint8_t id);     /* Dessin d’une seule touche de clavier à l’écran */
+uint8_t Key_display_inverted(uint8_t id);   /* Dessin d’une seule touche de clavier à l’écran (couleur inversée) */
+uint8_t Keyboard_check(void);               /* Vérifier l’entrée sur le clavier à l’écran */
+void Keyboard_handler();                    /* Vérifier l’entrée sur le clavier à l’écran */
 
 #ifdef __cplusplus
 }
