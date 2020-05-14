@@ -16,6 +16,7 @@ TS_StateTypeDef tScreen;
 USBMIDI midi(Fastspeed_Interface,0x0700,0x0101,0x0001);
 
 /* Liste couleurs possibles */
+/*uint32_t keycolorlist[40] = {LCD_COLOR_BLUE,LCD_COLOR_GREEN,LCD_COLOR_RED,LCD_COLOR_CYAN,LCD_COLOR_MAGENTA,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTBLUE,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTRED,LCD_COLOR_LIGHTCYAN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKGREEN,LCD_COLOR_DARKRED,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKMAGENTA,LCD_COLOR_DARKYELLOW,LCD_COLOR_BROWN,LCD_COLOR_ORANGE,LCD_COLOR_BLUE,LCD_COLOR_GREEN,LCD_COLOR_RED,LCD_COLOR_CYAN,LCD_COLOR_MAGENTA,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTBLUE,LCD_COLOR_LIGHTGREEN,LCD_COLOR_LIGHTRED,LCD_COLOR_LIGHTCYAN,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_LIGHTYELLOW,LCD_COLOR_DARKBLUE,LCD_COLOR_DARKGREEN,LCD_COLOR_DARKRED,LCD_COLOR_DARKCYAN,LCD_COLOR_DARKMAGENTA,LCD_COLOR_DARKYELLOW,LCD_COLOR_BROWN,LCD_COLOR_ORANGE};*/
 uint32_t keycolorlist[13] = {LCD_COLOR_GREEN,LCD_COLOR_YELLOW,LCD_COLOR_LIGHTMAGENTA,LCD_COLOR_BLUE,LCD_COLOR_ORANGE,LCD_COLOR_RED,LCD_COLOR_ORANGE,LCD_COLOR_GREEN,LCD_COLOR_BLUE,LCD_COLOR_MAGENTA,LCD_COLOR_BROWN,LCD_COLOR_ORANGE};
 
 /* Fonction definition de touches - TEST - */
@@ -294,7 +295,7 @@ int Keyboard_display_all(void)
 {
     int i;
     /* Nous obtenons la valeur associée à la couleur de l’arrière-plan de l’écran */
-    uint32_t back_color = BSP_LCD_GetBackColor();
+    uint32_t back_color = LCD_COLOR_WHITE;
     /* Peindre l’écran entier avec la couleur de l’arrière-plan */
     BSP_LCD_Clear(back_color);
     /* Nous dessinons toutes les touches sur le clavier */
@@ -310,7 +311,7 @@ int Key_display_normal(int id)
     if (keyboard.mode == gamme || id == 110 || id == 111)
     {
         /* Nous obtenons la couleur de l’arrière-plan de l’écran et la couleur de la police */
-        uint32_t back_color = BSP_LCD_GetBackColor();
+        uint32_t back_color = LCD_COLOR_WHITE;
         uint32_t text_color = keycolorlist[id%12];
         /* Changer les couleurs et peindre l’endroit pour la touche sur l’écran avec la couleur de l’arrière-plan */
         BSP_LCD_SetTextColor(back_color);
@@ -326,6 +327,8 @@ int Key_display_normal(int id)
         BSP_LCD_DisplayChar(keyboard.key[id].posX + 20, keyboard.key[id].posY + 8, keyboard.key[id].value[1]);
         BSP_LCD_DisplayChar(keyboard.key[id].posX + 8, keyboard.key[id].posY + 8, keyboard.key[id].value[0]);
         BSP_LCD_DisplayChar(keyboard.key[id].posX + 32, keyboard.key[id].posY + 8, keyboard.key[id].value[2]);
+        BSP_LCD_SetTextColor(text_color);
+        BSP_LCD_SetBackColor(back_color);
     }
     return 0;
 }
@@ -336,12 +339,18 @@ int Key_display_inverted(int id)
     if (keyboard.mode == gamme || id == 110 || id == 111)
     {
         /* Nous obtenons la couleur de l’arrière-plan de l’écran et la couleur de la police */
-        uint32_t back_color = BSP_LCD_GetBackColor();
+        uint32_t back_color = LCD_COLOR_WHITE;
         uint32_t text_color = keycolorlist[id%12];
+        /* Changer les couleurs et peindre l’endroit pour la touche sur l’écran avec la couleur de l’arrière-plan */
+        BSP_LCD_SetTextColor(text_color);
+        BSP_LCD_SetBackColor(back_color);
         BSP_LCD_FillRect(keyboard.key[id].posX, keyboard.key[id].posY, keyboard.key[id].dimX, keyboard.key[id].dimY);
         /* Retournez les mêmes valeurs de couleur de l’arrière-plan de l’écran et de la couleur de police */
         BSP_LCD_SetTextColor(back_color);
         BSP_LCD_SetBackColor(text_color);
+        /* Dessiner un cadre autour de la touche et fermer le pixel dans le coin inférieur droit */
+        BSP_LCD_DrawRect(keyboard.key[id].posX, keyboard.key[id].posY, keyboard.key[id].dimX, keyboard.key[id].dimY);
+        BSP_LCD_DrawPixel(keyboard.key[id].posX + keyboard.key[id].dimX, keyboard.key[id].posY + keyboard.key[id].dimY, text_color);
         /* Afficher la valeur de la touche dans la disposition actuelle du clavier. */
         BSP_LCD_DisplayChar(keyboard.key[id].posX + 20, keyboard.key[id].posY + 8, keyboard.key[id].value[1]);
         BSP_LCD_DisplayChar(keyboard.key[id].posX + 8, keyboard.key[id].posY + 8, keyboard.key[id].value[0]);
@@ -351,6 +360,7 @@ int Key_display_inverted(int id)
     }
     return 0;
 }
+
 /* Vérifier l’entrée sur le clavier à l’écran */
 int Keyboard_check(void)
 {
