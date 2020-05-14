@@ -1,93 +1,84 @@
 /*
  *******************************************************************************
- * Библиотека Keyboard виртуальной клавиатуры для дисплея с тач-экраном на демо-
- * плате STM32F746NG Dicovery
- * 
- * Файл "keyboard.h"
+ * Bibliothèque du clavier virtuel pour l'affichage avec l'écran tactile sur la
+ * carte STM32F746NG Discovery
+ * Fichier "keyboard.h"
  *******************************************************************************
  */
 
-/* Определяем для предотвращения множественного включения */
+/* Définition pour éviter l'inclusion multiple */
 #ifndef KEYBOARD_HPP
 #define KEYBOARD_HPP
 
-/* На случай использования в составе C++ проекта */
+/* Dans le cas d'utilisation en C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Добавляем библиотеку <string.h> для импорта функции strlen() */
+/* Inclusion de string.h pour avoir la fonction strlen() */
 #include <string.h>
 
-/* Добавляем библиотеки для работы с LCD и контроллером тач-экрана */
+/* Inclusion des bibliothèques pour travailler avec l'écran tactile et son contrôleur */
 #include "stm32746g_discovery_lcd.h"
 #include "stm32746g_discovery_ts.h"
 
-/* Определения */
-/* Различные раскладки клавиатуры */
-#define MODE_NUMBER                     3
+/* Définitions */
+/* Modes du clavier */
+#define MODE_NUMBER                     4
 #define MODE_UPPER_CASE                 0
 #define MODE_LOWER_CASE                 1
 #define MODE_SYMBOLS                    2
 
-/* Общее количество клавиш */
-#define KEY_NUMBER                      8
-#define KEY_BUFFER_LEN                  8
+/* Nombre de touches */
+#define KEY_NUMBER                      112
+#define KEY_BUFFER_LEN                  112
 
-/* Размеры клавиш в пикселях */
+/* Taille d'une touche en pixels */
 #define KEY_SMALL_LENGTH                70
 #define KEY_SMALL_HEIGHT                70
-#define KEY_ENTER_LENGTH                88
-#define KEY_SHIFT_LENGTH                64
-#define KEY_BACKSPACE_LENGTH            64
-#define KEY_SPACE_LENGTH                136
 #define KEY_DISTANCE                    25
+#define KEY_SMALLER_HEIGHT              50
 
-/* ASCII-коды для специальных клавиш */
-#define KEY_ENTER_VALUE                 0x0D
-#define KEY_SHIFT_VALUE                 0x10
-#define KEY_SPACE_VALUE                 0x20
-#define KEY_BACKSPACE_VALUE             0x08
-#define KEY_DELETE_VALUE                0x7F
-
-/* Состояние клавишы */
+/* État d'une touche */
 #define KEY_RELEASED                    0
 #define KEY_PRESSED                     1
 
-/* Структура для отдельной клавишы */
+/* Structure d'une touche */
 typedef struct
 {
-    uint8_t         id;
-    uint8_t         status;
+    int         id;
+    int         status;
     uint16_t        posX;
     uint16_t        posY;
-    uint8_t         dimX;
-    uint8_t         dimY;
-    uint8_t         value[MODE_NUMBER];
+    int         dimX;
+    int         dimY;
+    int         value[MODE_NUMBER];
+    int             content[MODE_NUMBER];
 }   Key_TypeDef;
 
-/* Структура для всей клавиатуры */
+/* Structure du clavier */
 typedef struct
 {
     uint16_t        posX;
     uint16_t        posY;
-    Key_TypeDef key[KEY_NUMBER];
-    uint8_t         mode;    
-    char            buffer[KEY_BUFFER_LEN];
+    Key_TypeDef key[KEY_NUMBER+1];
+    int         mode;    
+    char            buffer[KEY_BUFFER_LEN+1];
 }   Keyboard_TypeDef;
 
-/* Функции для работы с экранной клавиатурой */
-uint8_t Keyboard_init(uint16_t x_value, uint16_t y_value);
-uint8_t Keyboard_display_all(void);
-uint8_t Key_display_normal(uint8_t id);
-uint8_t Key_display_inverted(uint8_t id);
-uint8_t Key_display_specials(uint8_t id);
-uint8_t Keyboard_check(void);
-uint8_t Keyboard_handler(char *prompt, char buffer[]);
+/* Fonctions du clavier sur l'écran */
+void Keyboard_define(void);
+int Keyboard_init(uint16_t x_value, uint16_t y_value);
+int Keyboard_display_all(void);
+int Key_display_normal(int id);
+int Key_display_inverted(int id);
+int Key_display_specials(int id);
+int Keyboard_check(void);
+void Keyboard_handler();
 
 #ifdef __cplusplus
 }
 #endif
 
-/* Конец файла "keyboard.h" */
+/* Fin du fichier "keyboard.h" */
 #endif
